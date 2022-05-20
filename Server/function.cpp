@@ -38,8 +38,15 @@ void Initial_map_2() {
 }
 
 void initial_user_1() {
-    string name = "name";
+    string name = "wyf";
     string pass = "123456";
+    user* p = new user(name, pass);
+    p->pos = 1;
+}
+
+void initial_user_2() {
+    string name = "wjk";
+    string pass = "12345";
     user* p = new user(name, pass);
     p->pos = 1;
 }
@@ -116,6 +123,7 @@ void Initial_npc() {
 
 void Initial() {
     initial_user_1();
+    initial_user_2();
     Initial_map_1();
     Initial_map_2();
     link_map(1, 2, 'e');
@@ -362,7 +370,7 @@ void Welcome(SOCKET SID) {
 int name_in(int& id, SOCKET SID) {
     out(SID, string( "\n请输入用户名: "));
     string na;
-    cin >> na;
+    na=get(SID);
     for (auto it = user::umap.begin(); it != user::umap.end(); it++) {
         if (it->second->get_name() == na) id = it->first;
     }
@@ -376,7 +384,7 @@ int name_in(int& id, SOCKET SID) {
 int pass_in(int id, SOCKET SID) {
     out(SID, string( "请输入密码: "));
     string pa;
-    cin >> pa;
+    pa=get(SID);
     if (pa != user::umap[id]->get_password()) {
         out(SID, string( ">>密码错误，请重新输入\n"));
         return 0;

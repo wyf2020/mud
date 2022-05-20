@@ -23,6 +23,11 @@ DWORD WINAPI ThreadProc(
 	SOCKET AcceptSocket=(SOCKET) lpParameter;
 	
 	Welcome(AcceptSocket);
+
+	while (1) {
+		if(Begin(AcceptSocket)) break;
+	}
+
 	while(1) try {
 		user* u = user::umap[1];
 		int pos = u->get_pos();
