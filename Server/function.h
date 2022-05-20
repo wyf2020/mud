@@ -9,7 +9,6 @@
 #include"pokemon.h"
 using namespace std;
 
-
 bool isnum(string s);
 void Initial_map_1();
 
