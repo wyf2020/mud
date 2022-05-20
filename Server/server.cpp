@@ -3,6 +3,7 @@
 #include <string.h>
 #include <string>
 #include <iostream>
+#include <map>
 #include <windows.h>
 #include"function.h"
 
@@ -15,16 +16,18 @@ int cnt = 0;
 
 
 
-
 DWORD WINAPI ThreadProc(
 	__in  LPVOID lpParameter
 	)
 {
 	SOCKET AcceptSocket=(SOCKET) lpParameter;
-	
+	int uid = 0;
+	while (1) {
+        if ( uid = Begin(AcceptSocket)) break;
+    }
 	Welcome(AcceptSocket);
 	while(1) try {
-		user* u = user::umap[1];
+		user* u = user::umap[uid];
 		int pos = u->get_pos();
 		maps::MP[pos]->show(AcceptSocket);
 		while (1)

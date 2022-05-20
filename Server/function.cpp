@@ -37,6 +37,7 @@ void Initial_map_2() {
     return;
 }
 
+
 void initial_user_1() {
     string name = "name";
     string pass = "123456";
@@ -362,7 +363,7 @@ void Welcome(SOCKET SID) {
 int name_in(int& id, SOCKET SID) {
     out(SID, string( "\n请输入用户名: "));
     string na;
-    cin >> na;
+    na = get(SID);
     for (auto it = user::umap.begin(); it != user::umap.end(); it++) {
         if (it->second->get_name() == na) id = it->first;
     }
@@ -370,13 +371,13 @@ int name_in(int& id, SOCKET SID) {
         out(SID, string( ">>该用户不存在,请重新输入\n"));
         return 0;
     }
-    return 1;
+    return id;
 }
 
 int pass_in(int id, SOCKET SID) {
     out(SID, string( "请输入密码: "));
     string pa;
-    cin >> pa;
+    pa = get(SID);
     if (pa != user::umap[id]->get_password()) {
         out(SID, string( ">>密码错误，请重新输入\n"));
         return 0;
@@ -385,17 +386,18 @@ int pass_in(int id, SOCKET SID) {
 }
 
 
-bool Begin(SOCKET SID) {
+int Begin(SOCKET SID) {
     int id = -1;
+    int uid = 0;
     while (1) {
-        if (name_in(id,SID)) break;
+        if (uid = name_in(id,SID)) break;
     }
     while (1)
     {
         if (pass_in(id, SID)) break;
     }
     out(SID, string( "\n>>登录成功<<\n"));
-    return true;
+    return uid;
 }
 
 
