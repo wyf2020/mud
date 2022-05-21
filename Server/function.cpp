@@ -39,14 +39,22 @@ void Initial_map_2() {
 
 
 void initial_user_1() {
-    string name = "name";
+    string name = "wyf";
     string pass = "123456";
+    user* p = new user(name, pass);
+    p->pos = 1;
+}
+
+void initial_user_2() {
+    string name = "wjk";
+    string pass = "12345";
     user* p = new user(name, pass);
     p->pos = 1;
 }
 
 void initial_user() {
     initial_user_1();
+    initial_user_2();
 }
 
 void initial_skill_1() {
@@ -62,7 +70,7 @@ void initial_skill() {
     initial_skill_2();
 }
 
-void initial_poke_1(int pos) {
+void initial_poke_1(int pos,int uid) {
     string name = "冰原地龙幼崽";
     string d = "这是一只生长在冰雪地区的龙裔，由于身体流淌的原始古龙的血脉过于稀薄，已经失去了飞行能力";
     pokemon* p = new pokemon(name, d, 1, pos);
@@ -72,7 +80,7 @@ void initial_poke_1(int pos) {
         maps::MP[pos]->insert_po(p->get_id());
     }
     else {
-        user* u = user::umap[1];
+        user* u = user::umap[uid];
         u->insert_poke(p->get_id());
     }
     p->ability["FLY"] = 0;
@@ -81,8 +89,9 @@ void initial_poke_1(int pos) {
 
 void initial_poke() {
     initial_skill();
-    initial_poke_1(1);
-    initial_poke_1(0);
+    initial_poke_1(1,0);
+    initial_poke_1(0,1);
+    initial_poke_1(0,2);
 }
 
 void Initial_key() {
@@ -116,7 +125,7 @@ void Initial_npc() {
 }
 
 void Initial() {
-    initial_user_1();
+    initial_user();
     Initial_map_1();
     Initial_map_2();
     link_map(1, 2, 'e');
@@ -335,6 +344,8 @@ void view_me(user* u, SOCKET SID) {
         return;
     }
     else if (type == "domed") {
+        out(SID, string("你吹响龙骨哨，唤来了:\n"));
+        u->show_poke(SID);
         return;
     }
     out(SID, string( "\n--指令无法识别，黑龙米狄尔遗留的瘴气似乎侵蚀了你的理智..--\n"));
@@ -360,18 +371,18 @@ void Welcome(SOCKET SID) {
     out(SID, string("这里是龙裔与驯龙师共存的世外桃源...\n"));
 }
 
-int name_in(int& id, SOCKET SID) {
+bool name_in(int& id, SOCKET SID) {
     out(SID, string( "\n请输入用户名: "));
     string na;
     na = get(SID);
     for (auto it = user::umap.begin(); it != user::umap.end(); it++) {
         if (it->second->get_name() == na) id = it->first;
     }
-    if (id == '-1') {
+    if (id == -1) {
         out(SID, string( ">>该用户不存在,请重新输入\n"));
-        return 0;
+        return false;
     }
-    return id;
+    return true;
 }
 
 int pass_in(int id, SOCKET SID) {
@@ -388,16 +399,16 @@ int pass_in(int id, SOCKET SID) {
 
 int Begin(SOCKET SID) {
     int id = -1;
-    int uid = 0;
     while (1) {
-        if (uid = name_in(id,SID)) break;
+        if(name_in(id, SID)) break;
+        
     }
     while (1)
     {
         if (pass_in(id, SID)) break;
     }
     out(SID, string( "\n>>登录成功<<\n"));
-    return uid;
+    return id;
 }
 
 

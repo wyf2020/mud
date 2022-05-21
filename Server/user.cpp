@@ -93,7 +93,7 @@ void user::show_poke(SOCKET SID) {
     int cnt = 0;
     for (auto t : poke) {
         cnt++;
-        out(SID, to_string(cnt) + "." + pokemon::POKE[t]->get_name() + " ");
+        out(SID, string(" ")+to_string(cnt) + "." + pokemon::POKE[t]->get_name() + " ");
     }
     out(SID, string("\n"));
 }

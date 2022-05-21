@@ -25,11 +25,8 @@ DWORD WINAPI ThreadProc(
 	while (1) {
         if ( uid = Begin(AcceptSocket)) break;
     }
-	Welcome(AcceptSocket);
 
-	while (1) {
-		if(Begin(AcceptSocket)) break;
-	}
+	Welcome(AcceptSocket);
 
 	while(1) try {
 		user* u = user::umap[uid];
