@@ -78,8 +78,8 @@ void pokemon::show_dis(SOCKET SID)
 
 void pokemon::level_up(SOCKET SID) {
     level++;
-    MAXHP *= 1.1;
-    DEF *= 1.1;
+    MAXHP *= 1.2;
+    DEF *= 1.2;
 }
 
 void pokemon::insert_skill(int a) {
@@ -143,6 +143,9 @@ string damage::use_skill(int p1, int p2) {
         CRIm = "暴击";
     }
     ATK_res = (int)ceil(ATK_res * exp(-0.01 * pokemon::POKE[p2]->DEF));
+    if (id == 5) {
+        ATK_res *= (used_time + 1);
+    }
     pokemon::POKE[p2]->HP -= ATK_res;
     resm = "造成了" + to_string(ATK_res) + "点" +CRIm +"伤害";
     if (pokemon::POKE[p2]->HP < 0) pokemon::POKE[p2]->HP = 0;
