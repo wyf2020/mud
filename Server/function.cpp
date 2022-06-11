@@ -10,7 +10,7 @@ using namespace std;
 // Need to link with Ws2_32.lib
 #pragma comment (lib, "Ws2_32.lib")
 
-int exp_needed[max_level] = { 10, 20, 30, 50, 100, 150, 200, 300, 500, 1000 };
+int exp_needed[max_level] = { 10, 20, 30, 50, 100, 150, 200, 300, 500, 1000, 1500, 2000, 3000, 5000, 10000 };
 extern map<int, SOCKET> UID2SID;
 extern map<SOCKET, int> SID2UID;
 extern map<int, communicator> comap;
@@ -64,14 +64,41 @@ void initial_user() {
 void initial_skill_1() {
     new damage("寒冰箭", "发射一支冰霜箭矢", 10, 0.2, 0);
 }
-
 void initial_skill_2() {
-    new buff("霜铠", "凝结一层护盾, 提升本局战斗的防御力", 1, 10, 0);
+    new buff("霜铠", "凝结一层护盾, 提升本局战斗的防御力", 1, 15, 0);
+}
+void initial_skill_3() {
+    new buff("凝冰", "吸收空气中的冰元素, 提升本局战斗的攻击力", 1.5, 10, 0);
+}
+void initial_skill_4() {
+    new damage("龙之吐息", "释放带有上古力量的龙息", 20, 0.5, 0);
+}
+void initial_skill_5() {
+    new damage("绝对零度", "吞噬空气中的热量(连续使用该技能, 伤害越来越高)", 5, 0, 0);
+}
+void initial_skill_6() {
+    new damage("霜之哀伤", "利用空气中的冰元素, 让自己非常哀伤(必定暴击)", 1, 1.0, 0);
+}
+void initial_skill_7() {
+    new damage("急速风刃", "连续释放大量风刃切割敌人", 25, 0.2, 0);
+}
+void initial_skill_8() {
+    new buff("休眠", "进入休眠状态, 提升少量防御力", 1, 10, 0);
+}
+void initial_skill_9() {
+    new buff("龙血禁咒", "使用上古巨龙血脉中的力量, 以自身防御力为代价, 提升大量攻击力", 2, -20, 0);
 }
 
 void initial_skill() {
     initial_skill_1();
     initial_skill_2();
+    initial_skill_3();
+    initial_skill_4();
+    initial_skill_5();
+    initial_skill_6();
+    initial_skill_7();
+    initial_skill_8();
+    initial_skill_9();
 }
 
 void initial_poke_1(int pos, int uid) {
@@ -80,6 +107,8 @@ void initial_poke_1(int pos, int uid) {
     pokemon* p = new pokemon(name, d, 1, pos);
     p->insert_skill(1);
     p->insert_skill(2);
+    p->insert_skill(3);
+    p->insert_skill(6);
     if (pos) {
         maps::MP[pos]->insert_po(p->get_id());
     }
@@ -91,11 +120,51 @@ void initial_poke_1(int pos, int uid) {
     return;
 }
 
+void initial_poke_2(int pos, int uid) {
+    string name = "成年冰原地龙";
+    string d = "这是一只生长在冰雪地区的龙裔，由于身体流淌的原始古龙的血脉过于稀薄，已经失去了飞行能力";
+    pokemon* p = new pokemon(name, d, 3, pos);
+    p->insert_skill(1);
+    p->insert_skill(2);
+    p->insert_skill(3);
+    p->insert_skill(5);
+    if (pos) {
+        maps::MP[pos]->insert_po(p->get_id());
+    }
+    else {
+        user* u = user::umap[uid];
+        u->insert_poke(p->get_id());
+    }
+    p->ability["FLY"] = 0;
+    return;
+}
+
+void initial_poke_3(int pos, int uid) {
+    string name = "天空龙";
+    string d = "上古天空的霸主, 星空之下最强的一族";
+    pokemon* p = new pokemon(name, d, 3, pos);
+    p->insert_skill(4);
+    p->insert_skill(7);
+    p->insert_skill(8);
+    p->insert_skill(9);
+    if (pos) {
+        maps::MP[pos]->insert_po(p->get_id());
+    }
+    else {
+        user* u = user::umap[uid];
+        u->insert_poke(p->get_id());
+    }
+    p->ability["FLY"] = 1;
+    return;
+}
+
 void initial_poke() {
     initial_skill();
     initial_poke_1(1,0);
     initial_poke_1(0,1);
     initial_poke_1(0,2);
+    initial_poke_2(1,0);
+    initial_poke_2(2,0);
 }
 
 void Initial_key() {
@@ -255,7 +324,7 @@ void fight_pvp(int u1, int u2, SOCKET SID1, SOCKET SID2) {
         out(SID2, string("对方") + num1 + "\n");
         if (p2->HP == 0) {
             out(SID1, string("你成功击败了") + up2->get_name());
-            p1->exp_up((int)ceil(exp_needed[p2->level - 1] * 0.5), SID1);
+            p1->exp_up((int)ceil(exp_needed[p2->level] * 0.5), SID1);
             out(SID2, string("你被") + up1->get_name() + "击败了");
             break;
         }
