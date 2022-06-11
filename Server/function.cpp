@@ -166,7 +166,16 @@ int Initial_npc(int id,int pos) {
     return p2->get_id();
 }
 
-
+int Initial_npc2(int id, int pos) {
+    string s1 = "劈里啪啦...(你是..火龙大人吗...)", s2 = "劈里啪啦劈里啪啦...(我好孤独啊...)", s3 = "啾啾劈里啪啦(快跑吧..离开吧....虚空终将吞噬我们...龙的时代已经消逝了..)";
+    vector<string>s;
+    s.push_back(s1); s.push_back(s2); s.push_back(s3);
+    string na = "孤独的火苗", di = "衰老的初始之火火苗，见证了火龙的衰亡和虚空的侵蚀..";
+    npc* p2 = new npc(s, id, na, di);
+    p2->setpos(pos);
+    if (pos != -1) maps::MP[pos]->insert_ob(p2->get_id());
+    return p2->get_id();
+}
 
 void Initialmaps()
 {
@@ -177,6 +186,10 @@ void Initialmaps()
     Initial_map_5();
     Initial_map_6();
     link_map(1, 2, 'e');
+    link_map(1, 3, 'w');
+    link_map(1, 4, 's');
+    link_map(1, 5, 'n');
+    link_map(5, 6,'e');
 }
 
 void Initialobject() {
@@ -186,6 +199,20 @@ void Initialobject() {
     Initial_box(id_bean,1);
     id_bean = Initial_bean(-1);
     Initial_npc(id_bean,1);
+    Initial_bean(2);
+    Initial_bean(2);
+    Initial_bean(3);
+    Initial_bean(4);
+    Initial_bean(5);
+    id_bean = Initial_bean(-1);
+    Initial_box(id_bean,3);
+    int id_key = Initial_key(-1);
+    Initial_box(id_key, 3);
+    Initial_key(5);
+    id_bean = Initial_bean(-1);
+    Initial_box(id_bean,6);
+    id_key = Initial_key(-1);
+    Initial_npc2(id_key, 4);
 }
 
 void Initial() {
