@@ -139,7 +139,7 @@ damage::~damage() {}
 
 string damage::use_skill(int p1, int p2) {
     string CRIm, resm;
-    int ATK_res = ATK;
+    int ATK_res = ATK*pokemon::POKE[p1]->ATKx;
     if ((double)rand() / RAND_MAX < CRI) {
         ATK_res *= 2;
         CRIm = "暴击";
@@ -165,7 +165,7 @@ buff::buff(string name, string describe, double ATKx, int DEF, int used_time)
 buff::~buff(){}
 
 bool notdebuff(int id) {
-    if (id == 2) return true; // 正面buff技能列表
+    if (id == 2 || id == 3 || id == 8 || id == 9) return true; // 正面buff技能列表
     else return false;
 }
 
@@ -178,8 +178,10 @@ string buff::use_skill(int p1, int p2) {
     string m;
     pokemon::POKE[p2]->ATKx *= ATKx;
     pokemon::POKE[p2]->DEF += DEF;
-    if (ATKx != 1) m += "伤害提升了 ";
-    if (DEF != 1) m += "防御力提升了 ";
+    if (ATKx > 1) m += "伤害提升了 ";
+    if (ATKx < 1) m += "伤害减少了 ";
+    if (DEF > 0) m += "自己的防御力提升了 ";
+    if (DEF < 0) m += "自己的防御力下降了 ";
     ++used_time;
     return m;
 }

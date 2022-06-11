@@ -68,14 +68,20 @@ int main(int argc, char* argv[])
 	//以一个无限循环的方式，不停地接收输入，发送到server
 	while(1)
 	{
+        int skip = 0;
         int count = recv(ConnectSocket, buf2, 1024, 0);
         if (count == 0)break;//被对方关闭
         if (count == SOCKET_ERROR)break;//错误count<0
         buf2[count] = '\0';
+        if (buf2[count - 1] == '@') {// 立即输出而不输入
+            buf2[--count] = '\0';
+            skip = 1;
+        }
         string sbuf2(buf2);
         if(sbuf2.length() != 1 || sbuf2[0] != ' ')
             cout << sbuf2 << flush;
         
+        if (skip) continue; // 仅输出,跳过输入
         string sbuf;
         cin >> sbuf;
         strcpy(buf, sbuf.c_str());

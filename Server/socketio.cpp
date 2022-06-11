@@ -9,18 +9,21 @@ using namespace std;
 map<SOCKET, string> m;
 
 string get(SOCKET socketid) {
-
+    int skip = 0;
     string s = m[socketid];
     m[socketid] = " ";
     int count = s.length(), sendCount = 0, currentPosition = 0;
     char sendBuf[maxc] = {};
     strcpy(sendBuf, s.c_str());
+    if (sendBuf[count - 1] == '@') skip = 1;
     while (count > 0 && (sendCount = send(socketid, sendBuf + currentPosition, count, 0)) != SOCKET_ERROR)
     {
         count -= sendCount;
         currentPosition += sendCount;
     }
     if (sendCount == SOCKET_ERROR) throw - 1;
+
+    if (skip == 1) return "";
 
     char recvBuf[maxc] = {};
     count = recv(socketid, recvBuf, maxc, 0);

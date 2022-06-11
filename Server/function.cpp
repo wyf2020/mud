@@ -103,7 +103,7 @@ void initial_skill_2() {
     new buff("霜铠", "凝结一层护盾, 提升本局战斗的防御力", 1, 15, 0);
 }
 void initial_skill_3() {
-    new buff("凝冰", "吸收空气中的冰元素, 提升本局战斗的攻击力", 1.5, 10, 0);
+    new buff("凝冰", "吸收空气中的冰元素, 提升本局战斗的攻击力", 1.5, 0, 0);
 }
 void initial_skill_4() {
     new damage("龙之吐息", "释放带有上古力量的龙息", 20, 0.5, 0);
@@ -371,7 +371,8 @@ int find_nth_skill(pokemon *p, int n) {
 void fight_pvp(int u1, int u2, SOCKET SID1, SOCKET SID2) {
     user* up1 = user::umap[u1], * up2 = user::umap[u2];
     comap[u2].set_asked(u1);
-    out(SID1, string("正在等待")+up2->get_name()+"接受战斗!\n");
+    out(SID1, string("正在等待")+up2->get_name()+"接受战斗!\n@");
+    get(SID1);// 立即输出s
     int cntms = 50;
     int gofight = 0;
     while (1) {
@@ -414,16 +415,18 @@ void fight_pvp(int u1, int u2, SOCKET SID1, SOCKET SID2) {
     int round = 0;
     while (1) {
         round++;
-        out(SID1, string("-------------------第") + to_string(round) + "回合---------------------\n");
-        out(SID2, string("-------------------第") + to_string(round) + "回合---------------------\n");
+        out(SID1, string("------------------------第") + to_string(round) + "回合---------------------------(你的回合)\n");
         p1->show_status(SID1);
-        p2->show_status(SID2);
         out(SID1, string("      VS      "));
-        out(SID2, string("      VS      "));
         p2->show_status(SID1);
-        p1->show_status(SID2);
         out(SID1, string("\n"));
-        out(SID2, string("\n"));
+
+        out(SID2, string("------------------------第") + to_string(round) + "回合---------------------------(对方回合)\n");
+        p2->show_status(SID2);
+        out(SID2, string("      VS      "));
+        p1->show_status(SID2);
+        out(SID2, string("\n@"));
+        get(SID2);
 
         int sk_id1 = 0, sk_id2 = 0;
         while (1) {
@@ -444,8 +447,11 @@ void fight_pvp(int u1, int u2, SOCKET SID1, SOCKET SID2) {
         }
         string num1 = Skill::SK[sk_id1]->use_skill(pid1, pid2);
 
-        out(SID1, string("你对") + p2->get_name() + num1 + "\n");
+        out(SID1, string("你") + num1 + "\n");
         out(SID2, string("对方") + num1 + "\n");
+
+
+
         if (p2->HP == 0) {
             out(SID1, string("你成功击败了") + up2->get_name());
             p1->exp_up((int)ceil(exp_needed[p2->level] * 0.5), SID1);
@@ -453,6 +459,21 @@ void fight_pvp(int u1, int u2, SOCKET SID1, SOCKET SID2) {
             break;
         }
         else {
+            round++;
+
+            out(SID1, string("------------------------第") + to_string(round) + "回合---------------------------(对方回合)\n");
+            p1->show_status(SID1);
+            out(SID1, string("      VS      "));
+            p2->show_status(SID1);
+            out(SID1, string("\n@"));
+            get(SID1);
+
+            out(SID2, string("------------------------第") + to_string(round) + "回合---------------------------(你的回合)\n");
+            p2->show_status(SID2);
+            out(SID2, string("      VS      "));
+            p1->show_status(SID2);
+            out(SID2, string("\n"));
+
             while (1) {
                 if (sk_id2 == 0) {
                     out(SID2, string("请选择技能:\n"));
@@ -470,8 +491,8 @@ void fight_pvp(int u1, int u2, SOCKET SID1, SOCKET SID2) {
                 }
             }
             string num2 = Skill::SK[sk_id2]->use_skill(pid2, pid1);
-            out(SID2, string("你对") + p1->get_name() + num2);
-            out(SID1, string("对方") + num2);
+            out(SID2, string("你") + num2 + "\n");
+            out(SID1, string("对方") + num2 + "\n");
             if (p1->HP == 0) {
                 out(SID2, string("你成功击败了") + up1->get_name());
                 p2->exp_up((int)ceil(exp_needed[p1->level - 1] * 0.5), SID2);
@@ -668,6 +689,7 @@ void fight_start(user* u, SOCKET SID) {
     object = get(SID);
     if (object != "player" && object != "dragon") {
         out(SID, string("\n--指令无法识别，黑龙米狄尔遗留的瘴气似乎侵蚀了你的理智..--\n"));
+        return;
     }
     string sid;
     sid = get(SID);
