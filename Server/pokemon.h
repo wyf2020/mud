@@ -64,6 +64,7 @@ public:
     friend class damage;
     friend class buff;
     friend void fight(int u1, int pid2, SOCKET SID);
+    friend int find_nth_skill(pokemon* p, int n);
 };
 
 class Skill {

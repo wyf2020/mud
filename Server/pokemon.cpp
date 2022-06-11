@@ -96,7 +96,7 @@ void pokemon::init_fight() {
 }
 
 void pokemon::show_status(SOCKET SID) {
-    out(SID, name + " HP:" + to_string(HP) + "/" + to_string(MAXHP));
+    out(SID, "LV." + to_string(level) + " " + name + " HP:" + to_string(HP) + "/" + to_string(MAXHP));
 }
 
 
