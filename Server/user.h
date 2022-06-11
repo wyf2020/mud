@@ -20,6 +20,7 @@ protected:
     string password;
     map<int,int>my_ob;
     int defeat_poke;
+    bool is_online = false;
 public:
     int pos;
     set<int> poke;
@@ -40,7 +41,10 @@ public:
     void insert_poke(int a);
     void delete_poke(int a);
     void use(int id, SOCKET SID);
+    void online();
+    void offline();
     //show fun
+    bool Is_Online();
     void show_poke(SOCKET SID);
     void show_pack(SOCKET SID);
     void check_package(int id, SOCKET SID);

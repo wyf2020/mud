@@ -108,6 +108,21 @@ void user::use(int id, SOCKET SID)
     a->use(this,SID);
 }
 
+void user::online()
+{
+    is_online = true;
+}
+
+void user::offline()
+{
+    is_online = false;
+}
+
+bool user::Is_Online()
+{
+    return is_online;
+}
+
 void user::show_poke(SOCKET SID) {
     int cnt = 0;
     for (auto t : poke) {

@@ -72,9 +72,22 @@ void maps::delete_po(int id) {
     return;
 }
 
-void maps::show_ob_po(SOCKET SID) {
+void maps::show_ob_po(user *u,SOCKET SID) {
     int cnt_ob = 0;
     out(SID, string("\n你四下查看，发现了:\n( act [number] 与发现的物品或人类互动/fight [number] 与目标生物战斗) \n"));
+    out(SID, string(" 同为终末驯龙者的:\n"));
+
+    for (auto it = user::umap.begin(); it != user::umap.end(); it++) {
+        user* p = it->second;
+        if (p->Is_Online()&&p->get_pos() == u->get_pos() && p->get_id() != u->get_id()) {
+            cnt_ob++;
+            out(SID, string("  ") + to_string(cnt_ob) + ". ");
+            out(SID, p->get_name());
+            out(SID, string("\n"));
+        }
+    }
+    out(SID, string("\n"));
+    cnt_ob = 0;
     out(SID, string(" 物品和神秘人类:\n"));
     for (auto it = ob.begin(); it != ob.end(); it++) {
         cnt_ob++;

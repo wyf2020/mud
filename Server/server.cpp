@@ -27,9 +27,17 @@ DWORD WINAPI ThreadProc(
     }
 
 	Welcome(AcceptSocket);
-
+	user* u;
+	u = user::umap[uid];
+	if (u->Is_Online()) {
+		out(AcceptSocket, string("\n ..不可重复登陆,即将结束进程..\n"));
+		Sleep(3000);
+		closesocket(AcceptSocket);
+		return 0;
+	}
+	u->online();
 	while(1) try {
-		user* u = user::umap[uid];
+	
 		int pos = u->get_pos();
 		maps::MP[pos]->show(AcceptSocket);
 		while (1)
@@ -50,6 +58,8 @@ DWORD WINAPI ThreadProc(
 	//out(AcceptSocket, prefix + ":" +s);
 
 	//结束连接
+	//cout << "????????????????????/\n";
+	u->offline();
 	closesocket(AcceptSocket);
 	return 0;
 }
