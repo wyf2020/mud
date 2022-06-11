@@ -5,6 +5,7 @@
 #include <iostream>
 #include <map>
 #include <windows.h>
+#include <thread>
 #include"function.h"
 
 using namespace std;
@@ -13,7 +14,10 @@ using namespace std;
 #pragma comment (lib, "Ws2_32.lib")
 
 int cnt = 0;
+map<int, SOCKET> UID2SID;
+map<SOCKET, int> SID2UID;
 
+map<int, communicator> comap;
 
 
 DWORD WINAPI ThreadProc(
@@ -23,9 +27,13 @@ DWORD WINAPI ThreadProc(
 	SOCKET AcceptSocket=(SOCKET) lpParameter;
 	int uid = 0;
 	while (1) {
-        if ( uid = Begin(AcceptSocket)) break;
+		if (uid = Begin(AcceptSocket)) {
+			if (!UID2SID.count(uid)) UID2SID[uid] = AcceptSocket;
+			if (!SID2UID.count(AcceptSocket)) SID2UID[AcceptSocket] = uid;
+			if (!comap.count(uid)) comap[uid] = communicator(uid);
+			break;
+		}
     }
-
 	Welcome(AcceptSocket);
 	user* u;
 	u = user::umap[uid];
@@ -41,7 +49,35 @@ DWORD WINAPI ThreadProc(
 		int pos = u->get_pos();
 		maps::MP[pos]->show(AcceptSocket);
 		while (1)
-		{
+		{	
+			cout << uid << " " << comap[uid].get_asked() << endl;
+			if (comap[uid].get_asked()) {// been invited to fight
+				int askeruid = comap[uid].get_askeruid();
+				out(AcceptSocket, user::umap[askeruid]->get_name() + "向你发起对战, 是否接受(y/n)?\n");
+				while (1) {
+					string yn = get(AcceptSocket);
+					if (yn[0] == 'y' || yn[0] == 'Y') {
+						comap[askeruid].set_reply(1);
+						while (1) {
+							this_thread::sleep_for(chrono::milliseconds(100));
+							if (comap[uid].get_finish()) {
+								comap[uid].init();
+								break;
+							}
+						}
+						break;
+					}
+					else if (yn[0] == 'n' || yn[0] == 'N') {
+						comap[askeruid].set_reply(2);
+						break;
+					}
+					else {
+						out(AcceptSocket, string("请输入'y'接受对战或输入'n'拒绝对战\n"));
+						continue;
+					}
+				}
+
+			}
 			out(AcceptSocket ,string("\n ..输入help以查看可选操作..\n"));
 			string op = get(AcceptSocket);
 			//cout << op.length() << endl;

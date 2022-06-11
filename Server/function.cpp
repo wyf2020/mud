@@ -1,5 +1,7 @@
 #include <iostream>
 #include <ctime>
+#include <map>
+#include <thread>
 
 #include"function.h"
 
@@ -9,7 +11,9 @@ using namespace std;
 #pragma comment (lib, "Ws2_32.lib")
 
 int exp_needed[max_level] = { 10, 20, 30, 50, 100, 150, 200, 300, 500, 1000 };
-
+extern map<int, SOCKET> UID2SID;
+extern map<SOCKET, int> SID2UID;
+extern map<int, communicator> comap;
 bool isnum(string s) {
     int l = s.length();
     for (int i = 0; i < l; i++) {
@@ -39,15 +43,15 @@ void Initial_map_2() {
 
 
 void initial_user_1() {
-    string name = "wyf";
-    string pass = "123456";
+    string name = "1";
+    string pass = "1";
     user* p = new user(name, pass);
     p->pos = 1;
 }
 
 void initial_user_2() {
-    string name = "wjk";
-    string pass = "12345";
+    string name = "2";
+    string pass = "2";
     user* p = new user(name, pass);
     p->pos = 1;
 }
@@ -70,7 +74,7 @@ void initial_skill() {
     initial_skill_2();
 }
 
-void initial_poke_1(int pos,int uid) {
+void initial_poke_1(int pos, int uid) {
     string name = "冰原地龙幼崽";
     string d = "这是一只生长在冰雪地区的龙裔，由于身体流淌的原始古龙的血脉过于稀薄，已经失去了飞行能力";
     pokemon* p = new pokemon(name, d, 1, pos);
@@ -165,6 +169,136 @@ int fight_begin(int u1, SOCKET SID) {
     }
 }
 
+int find_nth_skill(pokemon *p, int n) {
+    int total = 0, sk_id = 0;
+    for (auto t : p->skill) {
+        total++;
+        if (n == total) {
+            sk_id = t;
+            break;
+        }
+    }
+    return sk_id;
+}
+
+void fight_pvp(int u1, int u2, SOCKET SID1, SOCKET SID2) {
+    user* up1 = user::umap[u1], * up2 = user::umap[u2];
+    comap[u2].set_asked(u1);
+    out(SID1, string("正在等待")+up2->get_name()+"接受战斗!\n");
+    int cntms = 50;
+    int gofight = 0;
+    while (1) {
+        this_thread::sleep_for(chrono::milliseconds(100));
+        cntms++;
+        if (comap[u1].get_reply()) {
+            if (comap[u1].get_reply() == 1) {
+                out(SID1, up2->get_name() + "接受了你的战斗邀请\n");
+                gofight = 1;
+            }
+            else if (comap[u1].get_reply() == 2) {
+                out(SID1, up2->get_name() + "拒绝了你的战斗邀请\n");
+            }
+            break;
+        }
+        if (cntms % 100 == 0) {
+            out(SID1, string("正在等待") + up2->get_name() + "接受战斗!\n继续等待请按1, 放弃等待请按2\n");
+            comap[u2].cancel_asked();
+            string wait = get(SID1);
+            if (wait[0] == '1') {
+                comap[u2].set_asked(u1);
+                continue;
+            }
+            else if (wait[0] ==  '2') {
+                break;
+            }
+        }
+    }
+    if (gofight == 0) return;
+
+    int pid1 = fight_begin(u1, SID1);
+    int pid2 = fight_begin(u2, SID2);
+
+    pokemon* p1 = pokemon::POKE[pid1], * p2 = pokemon::POKE[pid2];
+
+    out(SID1,  string("对方派出了")+ p2->get_name() +"!\n");
+    out(SID2,  string("对方派出了")+ p1->get_name() +"!\n");
+    p1->init_fight();
+    p2->init_fight();
+    int round = 0;
+    while (1) {
+        round++;
+        out(SID1, string("-------------------第") + to_string(round) + "回合---------------------\n");
+        out(SID2, string("-------------------第") + to_string(round) + "回合---------------------\n");
+        p1->show_status(SID1);
+        p1->show_status(SID2);
+        out(SID1, string("      VS      "));
+        out(SID2, string("      VS      "));
+        p2->show_status(SID1);
+        p2->show_status(SID2);
+        out(SID1, string("\n"));
+        out(SID2, string("\n"));
+
+        int sk_id1 = 0, sk_id2 = 0;
+        while (1) {
+            if (sk_id1 == 0) {
+                out(SID1, string("请选择技能:\n"));
+                int total = p1->skill.size();
+                p1->show_skill(SID1);
+                string tid = "-1";
+                tid = get(SID1);
+                if (tid == "-1" || !isnum(tid) || atoi(tid.c_str()) > total) {
+                    out(SID1, string("请输入") + "1" + "~" + to_string(total) + "之间的整数\n");
+                }
+                else {
+                    sk_id1 = find_nth_skill(p1, atoi(tid.c_str()));
+                    break;
+                }
+            }
+        }
+        string num1 = Skill::SK[sk_id1]->use_skill(pid1, pid2);
+
+        out(SID1, string("你对") + p2->get_name() + num1 + "\n");
+        out(SID2, string("对方对你") + num1 + "\n");
+        if (p2->HP == 0) {
+            out(SID1, string("你成功击败了") + up2->get_name());
+            p1->exp_up((int)ceil(exp_needed[p2->level - 1] * 0.5), SID1);
+            out(SID2, string("你被") + up1->get_name() + "击败了");
+            break;
+        }
+        else {
+            while (1) {
+                if (sk_id2 == 0) {
+                    out(SID2, string("请选择技能:\n"));
+                    int total = p2->skill.size();
+                    p2->show_skill(SID2);
+                    string tid = "-1";
+                    tid = get(SID2);
+                    if (tid == "-1" || !isnum(tid) || atoi(tid.c_str()) > total) {
+                        out(SID2, string("请输入") + "1" + "~" + to_string(total) + "之间的整数\n");
+                    }
+                    else {
+                        sk_id2 = find_nth_skill(p2, atoi(tid.c_str()));
+                        break;
+                    }
+                }
+            }
+            string num2 = Skill::SK[sk_id2]->use_skill(pid2, pid1);
+            out(SID2, string("你对") + p1->get_name() + num2);
+            out(SID1, string("对方对你") + num2);
+            if (p1->HP == 0) {
+                out(SID2, string("你成功击败了") + up1->get_name());
+                p2->exp_up((int)ceil(exp_needed[p1->level - 1] * 0.5), SID2);
+                out(SID1, string("你被") + up2->get_name() + "击败了");
+                break;
+            }
+        }
+    }
+    p1->init_fight();
+    p2->init_fight();
+    comap[u2].set_finish();
+    comap[u1].init();
+}
+
 void fight(int u1, int pid2, SOCKET SID) {
     pokemon* p1, * p2 = pokemon::POKE[pid2];
     out(SID,  p2->get_name()+ " 出现了!\n" );
@@ -191,18 +325,19 @@ void fight(int u1, int pid2, SOCKET SID) {
                 out(SID, string("请输入") + "1" + "~" + to_string(total) + "之间的整数\n"); 
             }
             else {
-                total = 0;
+                /*total = 0;
                 for (auto t : p1->skill) {
                     total++;
                     if (atoi(tid.c_str()) == total) {
                         sk_id = t;
                         break;
                     }
-                }
+                }*/
+                sk_id = find_nth_skill(p1, atoi(tid.c_str()));
                 break;
             }
         }
-        out(SID, string( "你") + Skill::SK[sk_id]->use_skill(pid1, pid2, SID) + "             ");
+        out(SID, string( "你") + Skill::SK[sk_id]->use_skill(pid1, pid2) + "             ");
         if (p2->HP == 0) {
             out(SID, string( "你成功击败了")+ p2->get_name());
             p1->exp_up((int)ceil(exp_needed[p2->level - 1] * 0.5), SID);
@@ -211,13 +346,16 @@ void fight(int u1, int pid2, SOCKET SID) {
         else {
             int total2 = (int)p2->skill.size();
             int tid2 = (int)ceil((double)rand() / RAND_MAX * total2);
-            total2 = 0;
+
+            sk_id = find_nth_skill(p2, tid2);
+            out(SID, string("对方") + Skill::SK[sk_id]->use_skill(pid2, pid1) + "\n");
+            /*total2 = 0;
             for (auto t : p2->skill) {
                 total2++;
                 if (tid2 == total2) {
                     out(SID, string( "对方") + Skill::SK[t]->use_skill(pid2, pid1, SID) + "\n");
                 }
-            }
+            }*/
             if (p1->HP == 0) {
                 out(SID, string( "你被") + p2->get_name() + "击败了\n");
                 break;
@@ -322,21 +460,41 @@ bool move_position(user* u, SOCKET SID) {
 }
 
 void fight_start(user* u, SOCKET SID) {
-    string id;
-    id = get(SID);
-    if (!isnum(id)) {
+    string object;
+    object = get(SID);
+    if (object != "player" && object != "dragon") {
+        out(SID, string("\n--指令无法识别，黑龙米狄尔遗留的瘴气似乎侵蚀了你的理智..--\n"));
+    }
+    string sid;
+    sid = get(SID);
+    if (!isnum(sid)) {
         out(SID, string( "\n--指令无法识别，黑龙米狄尔遗留的瘴气似乎侵蚀了你的理智..--\n"));
         return;
     }
+    int id = atoi(sid.c_str());
     int cnter = 0, bj = 0;
     maps& t = *maps::MP[u->pos];
-    for (auto it = t.poke.begin(); it != t.poke.end(); it++) {
-        cnter++;
-        if (cnter == atoi(id.c_str())) {
-            int i = pokemon::POKE[*it]->get_id();
-            fight(u->get_id(), i, SID);
-            bj = 1;
-            break;
+    if (object == "dragon") {
+        for (auto it = t.poke.begin(); it != t.poke.end(); it++) {
+            cnter++;
+            if (cnter == id) {
+                int i = pokemon::POKE[*it]->get_id();
+                fight(u->get_id(), i, SID);
+                bj = 1;
+                break;
+            }
+        }
+    }
+    else if (object == "player") {
+        for (auto t : user::umap) {
+            if (t.second->get_pos() != u->get_pos()) continue; // 如果不在同一地点
+            cnter++;
+            if (cnter == id) {
+                int u2 = t.second->get_id();
+                fight_pvp(u->get_id(), u2, SID, UID2SID[u2]);
+                bj = 1;
+                break;
+            }
         }
     }
     if (!bj) out(SID, string( "\n你似乎出现了对不存在的龙裔的幻觉..\n"));

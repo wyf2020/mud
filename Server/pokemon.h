@@ -64,6 +64,8 @@ public:
     friend class damage;
     friend class buff;
     friend void fight(int u1, int pid2, SOCKET SID);
+    friend void fight_pvp(int u1, int u2, SOCKET SID1, SOCKET SID2);
+    friend int find_nth_skill(pokemon* p, int n);
 };
 
 class Skill {
@@ -81,11 +83,12 @@ public:
     ~Skill();
     
     //action
-    virtual string use_skill(int p1, int p2, SOCKET SID) = 0;
+    virtual string use_skill(int p1, int p2) = 0;
     virtual void begin_fight(); // call at the beginning of fight
     //friend
     friend class pokemon;
     friend void fight(int u1, int pid2, SOCKET SID);
+    friend void fight_pvp(int u1, int u2, SOCKET SID1, SOCKET SID2);
 };
 
 class damage:public Skill {
@@ -97,7 +100,7 @@ public:
     damage(string name, string describe, int ATK, double CRI = 0, int used_time = 0);
     ~damage();
     //action
-    virtual string use_skill(int p1, int p2, SOCKET SID);
+    virtual string use_skill(int p1, int p2);
     virtual void begin_fight();
 };
 
@@ -110,7 +113,7 @@ public:
     buff(string name, string describe,double ATKx = 1, int DEF = 0, int used_time = 0);
     ~buff();
     //action
-    virtual string use_skill(int p1, int p2, SOCKET SID);
+    virtual string use_skill(int p1, int p2);
     virtual void begin_fight();
 };
 

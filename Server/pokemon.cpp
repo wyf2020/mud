@@ -96,7 +96,7 @@ void pokemon::init_fight() {
 }
 
 void pokemon::show_status(SOCKET SID) {
-    out(SID, name + " HP:" + to_string(HP) + "/" + to_string(MAXHP));
+    out(SID, "LV." + to_string(level) + " " + name + " HP:" + to_string(HP) + "/" + to_string(MAXHP));
 }
 
 
@@ -135,19 +135,18 @@ damage::damage(string name, string describe, int ATK, double CRI, int used_time)
 
 damage::~damage() {}
 
-string damage::use_skill(int p1, int p2, SOCKET SID) {
+string damage::use_skill(int p1, int p2) {
     string CRIm, resm;
     int ATK_res = ATK;
     if ((double)rand() / RAND_MAX < CRI) {
         ATK_res *= 2;
-        CRIm = "暴击! ";
+        CRIm = "暴击";
     }
     ATK_res = (int)ceil(ATK_res * exp(-0.01 * pokemon::POKE[p2]->DEF));
     pokemon::POKE[p2]->HP -= ATK_res;
-    resm = "造成了" + to_string(ATK_res) + "点伤害";
+    resm = "造成了" + to_string(ATK_res) + "点" +CRIm +"伤害";
     if (pokemon::POKE[p2]->HP < 0) pokemon::POKE[p2]->HP = 0;
     ++used_time;
-    out(SID, CRIm);
     return resm;
 }
 
@@ -165,7 +164,7 @@ bool notdebuff(int id) {
     else return false;
 }
 
-string buff::use_skill(int p1, int p2, SOCKET SID) {
+string buff::use_skill(int p1, int p2) {
     if (notdebuff(this->id)) {
         int temp = p1;
         p1 = p2;
