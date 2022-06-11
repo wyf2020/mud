@@ -38,6 +38,7 @@ void Initial();
 int fight_begin(int u1, SOCKET SID);
 int find_nth_skill(pokemon* p, int n);
 void fight(int u1, int pid2, SOCKET SID);
+void fight_pvp(int u1, int u2, SOCKET SID1, SOCKET SID2);
 
 //void operate(user* u, string op, string op2, SOCKET SID);
 

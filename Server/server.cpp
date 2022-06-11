@@ -16,41 +16,7 @@ using namespace std;
 int cnt = 0;
 map<int, SOCKET> UID2SID;
 map<SOCKET, int> SID2UID;
-class communicator {
-private:
-	int uid;
-	int been_asked;
-	int askeruid;
-	int been_reply; // 1 yes; 2 no
-	int finish;
-public:
-	communicator(int uid, SOCKET sid) : uid(uid), sid(sid) {
-		been_asked = 0;
-		askeruid = 0;
-		been_reply = 0;
-		finish = 0;
-	}
-	int get_asked() { return been_asked; }
-	void set_asked(int askeruid) {
-		been_asked = 1;
-		askeruid = askeruid;
-	}
-	int get_reply() {
-		return been_reply;
-	}
-	void set_reply(int yn) {
-		been_reply = yn;
-	}
-	int get_askeruid() { return askeruid; }
-	int get_finish() { return finish; }
-	void set_finish() { finish = 1; }
-	void init() {
-		been_asked = 0;
-		been_reply = 0;
-		askeruid = 0;
-		finish = 0;
-	}
-};
+
 map<int, communicator> comap;
 
 
@@ -64,7 +30,7 @@ DWORD WINAPI ThreadProc(
 		if (uid = Begin(AcceptSocket)) {
 			if (!UID2SID.count(uid)) UID2SID[uid] = AcceptSocket;
 			if (!SID2UID.count(AcceptSocket)) SID2UID[AcceptSocket] = uid;
-			if (!comap.count(uid)) comap[uid] = communicator(uid, AcceptSocket);
+			if (!comap.count(uid)) comap[uid] = communicator(uid);
 			break;
 		}
     }
@@ -75,7 +41,8 @@ DWORD WINAPI ThreadProc(
 		int pos = u->get_pos();
 		maps::MP[pos]->show(AcceptSocket);
 		while (1)
-		{
+		{	
+			cout << uid << " " << comap[uid].get_asked() << endl;
 			if (comap[uid].get_asked()) {// been invited to fight
 				int askeruid = comap[uid].get_askeruid();
 				out(AcceptSocket, user::umap[askeruid]->get_name() + "向你发起对战, 是否接受(y/n)?\n");
@@ -97,7 +64,7 @@ DWORD WINAPI ThreadProc(
 						break;
 					}
 					else {
-						out(AcceptSocket, "请输入'y'接受对战或输入'n'拒绝对战\n");
+						out(AcceptSocket, string("请输入'y'接受对战或输入'n'拒绝对战\n"));
 						continue;
 					}
 				}
