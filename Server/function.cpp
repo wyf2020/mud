@@ -99,6 +99,7 @@ void Initial_key() {
     p->setpos(1);
     maps::MP[1]->insert_ob(p->get_id());
 }
+
 void Initial_box() {
     bean* pb = new bean(10);
     pb->setpos(-1);
@@ -124,10 +125,15 @@ void Initial_npc() {
     maps::MP[1]->insert_ob(p2->get_id());
 }
 
-void Initial() {
-    initial_user();
+void Initialmaps()
+{
     Initial_map_1();
     Initial_map_2();
+}
+
+void Initial() {
+    initial_user();
+    Initialmaps();
     link_map(1, 2, 'e');
     initial_poke();
     Initial_key();
