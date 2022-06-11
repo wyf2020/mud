@@ -225,11 +225,12 @@ void fight(int u1, int pid2, SOCKET SID) {
 void show_help(SOCKET SID) {
     out(SID, string("1. move [e/w/s/n] 向东/西/南/北方向移动\n"));
     out(SID, string("2. see [road/stuff]查看周遭\n"));
-    out(SID, string( "3. act [number] 与发现的物品或人类互动\n"));
-    out(SID, string( "4. help 查看帮助手册\n"));
-    out(SID, string( "5. check [other/dragon/package/domed] [number] 观察场景物品或人类/野生生物/背包内物品/已驯服的龙裔\n"));
-    out(SID, string( "6. fight [number] 与目标生物战斗\n"));
-    out(SID, string( "7. view [package/domed] 查看背包/被驯服的龙裔\n"));
+    out(SID, string("3. act [number] 与发现的物品或人类互动\n"));
+    out(SID, string("4. help 查看帮助手册\n"));
+    out(SID, string("5. check [other/dragon/package/domed] [number] 观察场景物品或人类/野生生物/背包内物品/已驯服的龙裔\n"));
+    out(SID, string("6. fight [number] 与目标生物战斗\n"));
+    out(SID, string("7. view [package/domed] 查看背包/被驯服的龙裔\n"));
+    out(SID, string("8. use [number] 使用背包内物品\n"));
     return;
 }
 
@@ -352,6 +353,15 @@ void view_me(user* u, SOCKET SID) {
     return;
 }
 
+void user_use(user* u, SOCKET SID) {
+    string id;
+    id = get(SID);
+    if (!isnum(id)) {
+        out(SID, string("\n--指令无法识别，黑龙米狄尔遗留的瘴气似乎侵蚀了你的理智..--\n"));
+        return;
+    }
+    u->use(atoi(id.c_str()), SID);
+}
 
 bool operate(user* u, string op, SOCKET SID) {
     if (op == "help") { show_help(SID); return false; }
@@ -361,6 +371,7 @@ bool operate(user* u, string op, SOCKET SID) {
     if (op == "check") { check_ob(u,SID); return false; }
     if (op == "move") { if (move_position(u, SID)) return true; else return false; }
     if (op == "view") { view_me(u,SID); return false; }
+    if (op == "use") { user_use(u,SID); return false; }
     out(SID, string( "\n--指令无法识别，黑龙米狄尔遗留的瘴气似乎侵蚀了你的理智..--\n"));
 
     return false;

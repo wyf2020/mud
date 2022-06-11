@@ -89,6 +89,27 @@ void user::delete_poke(int a) {
     poke.erase(a);
 }
 
+void user::use(int id, SOCKET SID)
+{
+    int cnt = 0;
+    map<string, int>cnter;
+    cnter.clear();
+    set<int>& t = this->my_ob;
+    set<int>::iterator it;
+    for (it = t.begin(); it != t.end(); it++) {
+        int id = *it;
+        object* a = object::OB[id];
+        cnter[a->get_name()]++;
+    }
+    map<string, int>::iterator i;
+    for (i = cnter.begin(); i != cnter.end(); i++)
+    {
+        cnt++;
+        out(SID, string("  ") + to_string(cnt) + ". " + i->first + " x" + to_string(i->second) + "\n");
+    }
+
+}
+
 void user::show_poke(SOCKET SID) {
     int cnt = 0;
     for (auto t : poke) {

@@ -39,6 +39,7 @@ public:
     void get_ob(int id);
     void insert_poke(int a);
     void delete_poke(int a);
+    void use(int id, SOCKET SID);
     //show fun
     void show_poke(SOCKET SID);
     void show_pack(SOCKET SID);
