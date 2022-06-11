@@ -91,7 +91,7 @@ box::~box() {
 
 void box::act(user* u, SOCKET SID) {
     if (acted == true) {
-        out(SID,  string("\n...你回过神来，发现它早已被你搜刮一空，你使劲拍了拍额头让自己清醒...\n"));
+        out(SID,  string("\n...你回过神来，发现它早已被搜刮一空，你使劲拍了拍额头让自己清醒...\n"));
         return;
     }
     map<int,int>::iterator it;
@@ -194,7 +194,7 @@ void npc::act(user* u, SOCKET SID) {
 void key::act(user* u, SOCKET SID)
 {
     if (acted == true) {
-        out(SID, string( "\n...你回过神来，发现它早已收入囊中，只是留下了诱人的虚影，你使劲拍了拍额头让自己清醒...\n"));
+        out(SID, string( "\n...你回过神来，发现它早已被收入囊中，只是留下了诱人的虚影，你使劲拍了拍额头让自己清醒...\n"));
         return;
     }
     out(SID, string( "似乎是与龙的朝夕相处提升了你的运气,你获得了.."));
