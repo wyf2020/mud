@@ -43,14 +43,14 @@ void Initial_map_2() {
 
 
 void initial_user_1() {
-    string name = "1";
+    string name = "wyf";
     string pass = "1";
     user* p = new user(name, pass);
     p->pos = 1;
 }
 
 void initial_user_2() {
-    string name = "2";
+    string name = "wjk";
     string pass = "2";
     user* p = new user(name, pass);
     p->pos = 1;
@@ -88,6 +88,12 @@ void initial_skill_8() {
 void initial_skill_9() {
     new buff("龙血禁咒", "使用上古巨龙血脉中的力量, 以自身防御力为代价, 提升大量攻击力", 2, -20, 0);
 }
+void initial_skill_10() {
+    new damage("龙骨突刺", "使用骨刺对敌方进行攻击", 20, 0, 0);
+}
+void initial_skill_11() {
+    new damage("火龙球", "喷出火球攻击地方", 25, 0, 0);
+}
 
 void initial_skill() {
     initial_skill_1();
@@ -99,6 +105,8 @@ void initial_skill() {
     initial_skill_7();
     initial_skill_8();
     initial_skill_9();
+    initial_skill_10();
+    initial_skill_11();
 }
 
 void initial_poke_1(int pos, int uid) {
@@ -123,7 +131,7 @@ void initial_poke_1(int pos, int uid) {
 void initial_poke_2(int pos, int uid) {
     string name = "成年冰原地龙";
     string d = "这是一只生长在冰雪地区的龙裔，由于身体流淌的原始古龙的血脉过于稀薄，已经失去了飞行能力";
-    pokemon* p = new pokemon(name, d, 3, pos);
+    pokemon* p = new pokemon(name, d, 2, pos);
     p->insert_skill(1);
     p->insert_skill(2);
     p->insert_skill(3);
@@ -142,7 +150,7 @@ void initial_poke_2(int pos, int uid) {
 void initial_poke_3(int pos, int uid) {
     string name = "天空龙";
     string d = "上古天空的霸主, 星空之下最强的一族";
-    pokemon* p = new pokemon(name, d, 3, pos);
+    pokemon* p = new pokemon(name, d, 1, pos);
     p->insert_skill(4);
     p->insert_skill(7);
     p->insert_skill(8);
@@ -158,13 +166,47 @@ void initial_poke_3(int pos, int uid) {
     return;
 }
 
+void initial_poke_4(int pos, int uid) {
+    string name = "骨龙";
+    string d = "上古战场残存的尸骸, 如今又被神秘力量复苏";
+    pokemon* p = new pokemon(name, d, 4, pos);
+    p->insert_skill(10);
+    if (pos) {
+        maps::MP[pos]->insert_po(p->get_id());
+    }
+    else {
+        user* u = user::umap[uid];
+        u->insert_poke(p->get_id());
+    }
+    p->ability["FLY"] = 0;
+    return;
+}
+
+void initial_poke_5(int pos, int uid) {
+    string name = "熔岩巨龙";
+    string d = "熔岩中诞生的巨龙";
+    pokemon* p = new pokemon(name, d, 5, pos);
+    p->insert_skill(11);
+    if (pos) {
+        maps::MP[pos]->insert_po(p->get_id());
+    }
+    else {
+        user* u = user::umap[uid];
+        u->insert_poke(p->get_id());
+    }
+    p->ability["FLY"] = 0;
+    return;
+}
+
 void initial_poke() {
     initial_skill();
     initial_poke_1(1,0);
     initial_poke_1(0,1);
     initial_poke_1(0,2);
     initial_poke_2(1,0);
-    initial_poke_2(2,0);
+    initial_poke_4(5,0);
+    initial_poke_5(4,0);
+    initial_poke_3(3,0);
 }
 
 void Initial_key() {
@@ -404,6 +446,23 @@ void fight(int u1, int pid2, SOCKET SID) {
         if (p2->HP == 0) {
             out(SID, string( "你成功击败了")+ p2->get_name());
             p1->exp_up((int)ceil(exp_needed[p2->level - 1] * 0.5), SID);
+            out(SID, string("是否捕捉击败的龙裔(y/n)?"));
+            while (1) {
+                string yn = get(SID);
+                if (yn[0] == 'y' || yn[0] == 'Y') {
+                    out(SID, string("捕捉成功!你获得了") + p2->get_name());
+                    user::umap[u1]->insert_poke(p2->get_id());
+                    break;
+                }
+                else if (yn[0] == 'n' || yn[0] == 'N') {
+                    out(SID, string("你放弃了捕捉"));
+                    break;
+                }
+                else {
+                    out(SID, string("请输入'y'捕捉或输入'n'放弃捕捉\n"));
+                    continue;
+                }
+            }
             break;
         }
         else {
