@@ -576,7 +576,7 @@ void show_help(SOCKET SID) {
     out(SID, string("3. act [number] 与发现的物品或人类互动\n"));
     out(SID, string("4. help 查看帮助手册\n"));
     out(SID, string("5. check [other/dragon/package/domed] [number] 观察场景物品或人类/野生生物/背包内物品/已驯服的龙裔\n"));
-    out(SID, string("6. fight [number] 与目标生物战斗\n"));
+    out(SID, string("6. fight [player/dragon][number] 与目标玩家或生物战斗\n"));
     out(SID, string("7. view [package/domed] 查看背包/被驯服的龙裔\n"));
     out(SID, string("8. use [number] 使用背包内物品\n"));
     return;
