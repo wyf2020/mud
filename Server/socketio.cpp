@@ -36,7 +36,7 @@ string get(SOCKET socketid) {
 }
 
 void out(SOCKET socketid, string s) {
-    if (m.count(socketid)) {
+    if (m.count(socketid) && m[socketid] != " ") {
         m[socketid] += s;
     }
     else {
