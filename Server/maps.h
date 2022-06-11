@@ -33,7 +33,7 @@ public:
     void delete_po(int id);
     void show(SOCKET SID);
     void show_link(SOCKET SID);
-    void show_ob_po(SOCKET SID);
+    void show_ob_po(user *u,SOCKET SID);
     friend void link_map(int a, int b, char p);
     friend bool Check(user* u, int pos, char a, SOCKET SID);
 

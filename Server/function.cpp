@@ -376,7 +376,7 @@ void see(user* u, SOCKET SID) {
     string op2;
     op2 = get(SID);
     if (op2 == "road") maps::MP[u->pos]->show_link(SID);
-    else  if (op2 == "stuff") maps::MP[u->pos]->show_ob_po(SID);
+    else  if (op2 == "stuff") maps::MP[u->pos]->show_ob_po(u,SID);
     else  out(SID, string( "\n--指令无法识别，黑龙米狄尔遗留的瘴气似乎侵蚀了你的理智..--\n"));
     return;
 }
@@ -575,6 +575,7 @@ int Begin(SOCKET SID) {
     while (1)
     {
         if (pass_in(id, SID)) break;
+
     }
     out(SID, string( "\n>>登录成功<<\n"));
     return id;

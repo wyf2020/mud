@@ -18,8 +18,9 @@ protected:
     int id;
     string username;
     string password;
-    set<int>my_ob;
+    map<int,int>my_ob;
     int defeat_poke;
+    bool is_online = false;
 public:
     int pos;
     set<int> poke;
@@ -35,12 +36,15 @@ public:
     int get_pos();
     //modify fun
     bool move(char a, SOCKET SID);
-    void delete_ob(int id);
+    void delete_ob(int id,SOCKET SID);
     void get_ob(int id);
     void insert_poke(int a);
     void delete_poke(int a);
     void use(int id, SOCKET SID);
+    void online();
+    void offline();
     //show fun
+    bool Is_Online();
     void show_poke(SOCKET SID);
     void show_pack(SOCKET SID);
     void check_package(int id, SOCKET SID);
