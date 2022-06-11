@@ -57,7 +57,7 @@ void view_me(user* u, SOCKET SID);
 
 bool operate(user* u, string op, SOCKET SID);
 void Welcome(SOCKET SID);
-int name_in(int& id, SOCKET SID);
+bool name_in(int& id, SOCKET SID);
 int pass_in(int id, SOCKET SID);
 int Begin(SOCKET SID);
 
