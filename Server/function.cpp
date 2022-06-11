@@ -321,7 +321,7 @@ void Initialobject() {
     Initial_box(id_key, 3);
     Initial_key(5);
     id_bean = Initial_bean(-1);
-    Initial_box(id_bean,6);
+    Initial_box(id_bean,4);
     id_key = Initial_key(-1);
     Initial_npc2(id_key, 4);
 }

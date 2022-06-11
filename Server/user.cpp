@@ -103,9 +103,20 @@ void user::use(int id, SOCKET SID)
     if (!my_ob.count(id)) {
         out(SID, string("\n你还未拥有" + name + ",去探索更远的大陆吧..\n"));
     }
-    object* a = object::OB[id];
+    this->my_ob[id]--;
+    //object* a = object::OB[id];
     //out(SID, string("?????????\n "));
-    a->use(this,SID);
+    //a->use(this,SID);
+    if (id == 1) {
+        bean* a = new bean(10);
+        a->use(this, SID);
+        delete a;
+    }
+    if (id == 2) {
+        key* a = new key();
+        a->use(this, SID);
+        delete a;
+    }
 }
 
 void user::online()
@@ -162,6 +173,7 @@ void user::check_package(int id, SOCKET SID)
     }
     return;
 }
+
 
 void user::check_domed(int id, SOCKET SID)
 {

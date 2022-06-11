@@ -93,7 +93,7 @@ void maps::show_ob_po(user *u,SOCKET SID) {
         cnt_ob++;
         out(SID,string("  ") + to_string(cnt_ob) + ". ");
         out(SID,object::OB[*it]->get_name());
-        if (object::OB[*it]->acted == true) out(SID, string("(已取得)"));
+        if (object::OB[*it]->acted == true) out(SID, string("(已被取得)"));
         out(SID, string("\n"));
     }
     out(SID, " 其他生物:\n"); 

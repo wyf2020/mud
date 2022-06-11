@@ -66,7 +66,8 @@ void pokemon::show_skill(SOCKET SID) {
     int cnt = 0;
     for (auto t : skill) {
         cnt++;
-        out(SID, to_string(cnt) + "." + Skill::SK[t]->get_name() + " ");
+        out(SID, to_string(cnt) + "." + Skill::SK[t]->get_name() + "\n");
+        out(SID, string(".") + Skill::SK[t]->describe + "\n");
     }
     out(SID, string("\n"));
 }
@@ -85,6 +86,7 @@ void pokemon::level_up(SOCKET SID) {
 void pokemon::insert_skill(int a) {
     skill.insert(a);
 }
+
 void pokemon::delete_skill(int a) {
     skill.erase(a);
 }
