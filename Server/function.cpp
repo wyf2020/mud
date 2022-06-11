@@ -691,7 +691,7 @@ void fight_start(user* u, SOCKET SID) {
     }
     else if (object == "player") {
         for (auto t : user::umap) {
-            if (t.second->get_pos() != u->get_pos()) continue; // 如果不在同一地点
+            if (t.second->get_pos() != u->get_pos() || t.second->get_id() == u->get_id()) continue; // 如果不在同一地点
             cnter++;
             if (cnter == id) {
                 int u2 = t.second->get_id();

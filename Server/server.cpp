@@ -39,7 +39,8 @@ DWORD WINAPI ThreadProc(
 	u = user::umap[uid];
 	if (u->Is_Online()) {
 		out(AcceptSocket, string("\n ..不可重复登陆,即将结束进程..\n"));
-		Sleep(3000);
+		get(AcceptSocket);
+		this_thread::sleep_for(chrono::milliseconds(3000));
 		closesocket(AcceptSocket);
 		return 0;
 	}
