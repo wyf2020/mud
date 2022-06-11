@@ -50,6 +50,7 @@ private:
 public:
     box(int in,string n = "龙首宝箱", string di = "\n这是一个被精雕细琢的神秘材质的箱子，似乎藏着宝物，需要用钥匙打开...\n");
     ~box();
+    void insert(int id);
     void act(user *u, SOCKET SID);
 };
 

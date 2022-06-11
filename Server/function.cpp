@@ -34,13 +34,48 @@ void Initial_map_1() {
 
 void Initial_map_2() {
     string name = "天空岛";
-    string d = "这是一座浮空的岛屿, 你需要具有飞行能力的龙裔才能前往";
+    string d = "这是一座浮空的岛屿, 抬头望去只能看到山一样巨大的巨岩,需要具有飞行能力的龙裔才能前往";
     vector<int>* ob = new vector<int>;
     vector<int>* po = new vector<int>;
-    new maps(name, d, *ob, *po);
+    maps* p = new maps(name, d, *ob, *po);
     return;
 }
 
+void Initial_map_3() {
+    string name = "圣巢废墟";
+    string d = "这里曾是古龙首领的神圣巢穴，现在只留下了断裂的石柱和布满灰尘的黄金基座，由于更接近恩泽，这里龙裔较多的保留着古龙的血脉...";
+    vector<int>* ob = new vector<int>;
+    vector<int>* po = new vector<int>;
+    maps* p = new maps(name, d, *ob, *po);
+    return;
+}
+
+void Initial_map_4() {
+    string name = "初始火炉";
+    string d = "这里是古龙时代时火龙一族授予幼龙初始之火仪式的地方，如今只剩下万亿年的火炉还在微弱地燃烧...";
+    vector<int>* ob = new vector<int>;
+    vector<int>* po = new vector<int>;
+    maps* p = new maps(name, d, *ob, *po);
+    return;
+}
+
+void Initial_map_5() {
+    string name = "岩石要塞";
+    string d = "这是曾经虚空侵袭时遭遇的第一座要塞，岩石巨龙曾在这里驻守，如今的后裔都是它的血脉...";
+    vector<int>* ob = new vector<int>;
+    vector<int>* po = new vector<int>;
+    maps* p = new maps(name, d, *ob, *po);
+    return;
+}
+
+void Initial_map_6() {
+    string name = "空洞荒原";
+    string d = "这里什么都没有...或许古龙的时代这里也曾繁荣昌盛，可如今已经被虚空腐蚀，就连空间和时间也消失了....";
+    vector<int>* ob = new vector<int>;
+    vector<int>* po = new vector<int>;
+    maps* p = new maps(name, d, *ob, *po);
+    return;
+}
 
 void initial_user_1() {
     string name = "wyf";
@@ -209,46 +244,93 @@ void initial_poke() {
     initial_poke_3(3,0);
 }
 
-void Initial_key() {
+int Initial_key(int pos) {
     key* p = new key();
-    p->setpos(1);
-    maps::MP[1]->insert_ob(p->get_id());
-}
-void Initial_box() {
-    bean* pb = new bean(10);
-    pb->setpos(-1);
-    box* p = new box(3);
-    maps::MP[1]->insert_ob(p->get_id());
+    p->setpos(pos);
+    if(pos!=-1) maps::MP[pos]->insert_ob(p->get_id());
+    return p->get_id();
 }
 
-void Initial_bean() {
+int  Initial_box(int id,int pos) {
+    box* p = new box(0);
+    p->insert(id);
+    p->setpos(pos);
+    if(pos!=-1) maps::MP[pos]->insert_ob(p->get_id());
+    return p->get_id();
+}
+
+int Initial_bean(int pos) {
     bean* p = new bean(10);
-    p->setpos(1);
-    maps::MP[1]->insert_ob(p->get_id());
+    p->setpos(pos);
+    if (pos != -1) maps::MP[pos]->insert_ob(p->get_id());
+    return p->get_id();
 }
 
-void Initial_npc() {
+int Initial_npc(int id,int pos) {
     string s1 = "远方的旅客啊...真是稀奇..", s2 = "你是最后一脉驯龙者吧...", s3 = "我吗？我只是在这冰原漫无目的地游荡的可怜游魂罢了..";
     vector<string>s;
     s.push_back(s1); s.push_back(s2); s.push_back(s3);
-    bean* p = new bean(10);
-    p->setpos(-1);
     string na = "残缺的老妪游魂", di = "这是一个可怜的游魂，已经快消逝在这冰原中了";
-    npc* p2 = new npc(s, 5, na, di);
-    p2->setpos(1);
-    maps::MP[1]->insert_ob(p2->get_id());
+    npc* p2 = new npc(s, id, na, di);
+    p2->setpos(pos);
+    if (pos != -1) maps::MP[pos]->insert_ob(p2->get_id());
+    return p2->get_id();
+}
+
+int Initial_npc2(int id, int pos) {
+    string s1 = "劈里啪啦...(你是..火龙大人吗...)", s2 = "劈里啪啦劈里啪啦...(我好孤独啊...)", s3 = "啾啾劈里啪啦(快跑吧..离开吧....虚空终将吞噬我们...龙的时代已经消逝了..)";
+    vector<string>s;
+    s.push_back(s1); s.push_back(s2); s.push_back(s3);
+    string na = "孤独的火苗", di = "衰老的初始之火火苗，见证了火龙的衰亡和虚空的侵蚀..";
+    npc* p2 = new npc(s, id, na, di);
+    p2->setpos(pos);
+    if (pos != -1) maps::MP[pos]->insert_ob(p2->get_id());
+    return p2->get_id();
+}
+
+void Initialmaps()
+{
+    Initial_map_1();
+    Initial_map_2();
+    Initial_map_3();
+    Initial_map_4();
+    Initial_map_5();
+    Initial_map_6();
+    link_map(1, 2, 'e');
+    link_map(1, 3, 'w');
+    link_map(1, 4, 's');
+    link_map(1, 5, 'n');
+    link_map(5, 6,'e');
+}
+
+void Initialobject() {
+    Initial_key(1);
+    Initial_bean(1);
+    int id_bean= Initial_bean(-1);
+    Initial_box(id_bean,1);
+    id_bean = Initial_bean(-1);
+    Initial_npc(id_bean,1);
+    Initial_bean(2);
+    Initial_bean(2);
+    Initial_bean(3);
+    Initial_bean(4);
+    Initial_bean(5);
+    id_bean = Initial_bean(-1);
+    Initial_box(id_bean,3);
+    int id_key = Initial_key(-1);
+    Initial_box(id_key, 3);
+    Initial_key(5);
+    id_bean = Initial_bean(-1);
+    Initial_box(id_bean,6);
+    id_key = Initial_key(-1);
+    Initial_npc2(id_key, 4);
 }
 
 void Initial() {
     initial_user();
-    Initial_map_1();
-    Initial_map_2();
-    link_map(1, 2, 'e');
+    Initialmaps();
+    Initialobject();
     initial_poke();
-    Initial_key();
-    Initial_bean();
-    Initial_box();
-    Initial_npc();
     srand((unsigned int)time(NULL));
 }
 
