@@ -18,7 +18,7 @@ protected:
     int id;
     string username;
     string password;
-    set<int>my_ob;
+    map<int,int>my_ob;
     int defeat_poke;
 public:
     int pos;
@@ -35,7 +35,7 @@ public:
     int get_pos();
     //modify fun
     bool move(char a, SOCKET SID);
-    void delete_ob(int id);
+    void delete_ob(int id,SOCKET SID);
     void get_ob(int id);
     void insert_poke(int a);
     void delete_poke(int a);

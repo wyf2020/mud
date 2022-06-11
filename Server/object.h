@@ -35,10 +35,11 @@ public:
     int get_pos();
     void set_name(string n);
     void set_acted();
+    static string typetoname(int type);
     virtual void act(user *u, SOCKET SID);
     void show(SOCKET SID);
     void setpos(int p);
-    virtual void use(user *u);
+    virtual void use(user *u,SOCKET SID);
     object(string d, string n);
     ~object();
 };
@@ -66,6 +67,7 @@ public:
 class key:public object {
 public:
     void act(user * u, SOCKET SID);
+    void use(user* u, SOCKET SID);
     key(string n = "龙纹钥匙", string di = "\n这是一个散发着光辉的钥匙，似乎有魔法的力量来打开任何箱子...\n");
     ~key();
 };

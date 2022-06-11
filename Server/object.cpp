@@ -63,7 +63,17 @@ void object::set_acted()
     acted = true;
 }
 
-void object::use(user* u) {
+string object::typetoname(int type)
+{
+    string a;
+    if (type == 1) a = "龙爪草";
+    if (type == 2) a = "龙纹钥匙";
+    if (type == 10) a = "龙首宝箱";
+    if (type == 11) a = "NPC";
+    return a;
+}
+
+void object::use(user* u,SOCKET SID) {
 
 }
 
@@ -73,7 +83,7 @@ void object::act(user* u, SOCKET SID)
 }
 
 box::box(int in, string n, string di ):inside(in),object(di,n) {
-    type = 1;
+    type = 10;
 }
 
 box::~box() {
@@ -84,17 +94,18 @@ void box::act(user* u, SOCKET SID) {
         out(SID,  string("\n...你回过神来，发现它早已被你搜刮一空，你使劲拍了拍额头让自己清醒...\n"));
         return;
     }
-    set<int>::iterator it;
+    map<int,int>::iterator it;
     int bj = -1;
-    for (it = u->my_ob.begin(); it != u->my_ob.end(); it++) {
+    if (u->my_ob.count(2)) bj = 2;
+    /*for (it = u->my_ob.begin(); it != u->my_ob.end(); it++) {
         
-        if (object::OB[*it]->get_name() == "龙纹钥匙") { bj = *it; break; }
-    }
+        if (object::OB[it0>]->get_name() == "龙纹钥匙") { bj = *it; break; }
+    }*/
     if (bj==-1) {
         out(SID,  string("\n你最终没能打开宝箱，但隐隐感受到宝箱对某种神秘钥匙的呼唤...\n"));
         return;
     }
-    u->delete_ob(bj);
+    u->delete_ob(bj,SID);
     int in = this->inside;
     object& t = *object::OB[in];
     out(SID, string( "\n龙首宝箱缓缓打开，古老的灰尘随着一丝古龙残存的气息冲天而起，尘埃落定之后，你得到了....\n"));
@@ -142,13 +153,13 @@ void bean::use(user* u, SOCKET SID)
 }
 
 bean::bean(int ex, string n, string di) :delta_ex(ex), object(di, n) {
-    type = 2;
+    type = 1;
 }
 
 bean::~bean() {}
 
 npc::npc(vector<string>& s, int ha, string na, string di) :have(ha), sentences(s), object(di, na) {
-    type = 1;
+    type = 11;
 }
 
 npc::~npc() {}
@@ -190,6 +201,12 @@ void key::act(user* u, SOCKET SID)
     u->get_ob(id);
     this->show(SID);
     set_acted();
+}
+
+void key::use(user* u, SOCKET SID)
+{
+    out(SID, string("\n你会用到它的，但不是现在。所以去找宝箱吧...\n"));
+    return;
 }
 
 key::key(string n, string di):object(di,n){

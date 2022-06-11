@@ -70,15 +70,23 @@ bool user::move(char a, SOCKET SID){
     return true;
 }
 
-void user::delete_ob(int id)
+void user::delete_ob(int id,SOCKET SID)
 {
-    this->my_ob.erase(id);
+    int type = object::OB[id]->get_type();
+    string name = object::OB[id]->get_name();
+    if (this->my_ob.count(type)) {
+        out(SID,name+string("已经没有了,") + string("去向新的大陆寻找吧...\n"));
+    }
+    else my_ob[type]--;
     return;
 }
 
 void user::get_ob(int id)
 {
-    (this->my_ob).insert(id);
+    int type = object::OB[id]->get_type();
+    if (this->my_ob.count(type)) my_ob.insert(make_pair(type, 1));
+    else my_ob[type]++;
+    //(this->my_ob).insert(id);
 }
 
 void user::insert_poke(int a) {
@@ -91,86 +99,51 @@ void user::delete_poke(int a) {
 
 void user::use(int id, SOCKET SID)
 {
-    int cnt = 0;
-    map<string, int>cnter;
-    cnter.clear();
-    set<int>& t = this->my_ob;
-    set<int>::iterator it;
-    for (it = t.begin(); it != t.end(); it++) {
-        int id = *it;
-        object* a = object::OB[id];
-        cnter[a->get_name()]++;
+    string name = object::typetoname(id);
+    if (!my_ob.count(id)) {
+        out(SID, string("\n你还未拥有" + name + ",去探索更远的大陆吧..\n"));
     }
-    map<string, int>::iterator i;
-    for (i = cnter.begin(); i != cnter.end(); i++)
-    {
-        cnt++;
-        out(SID, string("  ") + to_string(cnt) + ". " + i->first + " x" + to_string(i->second) + "\n");
-    }
-
+    object* a = object::OB[id];
+    //out(SID, string("?????????\n "));
+    a->use(this,SID);
 }
 
 void user::show_poke(SOCKET SID) {
     int cnt = 0;
     for (auto t : poke) {
         cnt++;
-        out(SID, string(" ")+to_string(cnt) + "." + pokemon::POKE[t]->get_name() + " ");
+        out(SID, string(" ")+to_string(cnt) + "." + pokemon::POKE[t]->get_name() + "  lv." + to_string(pokemon::POKE[t]->get_level()));
     }
     out(SID, string("\n"));
 }
 
 void user::show_pack(SOCKET SID)
 {
-    int cnt = 0;
-    map<string, int>cnter;
-    cnter.clear();
-    set<int>& t = this->my_ob;
-    set<int>::iterator it;
     out(SID, string("你检查了一下背包，里面有:\n"));
-    for (it = t.begin(); it != t.end(); it++) {
-        int id = *it;
-        object* a = object::OB[id];
-        cnter[a->get_name()]++;
+    for (int i = 1; i <= 2; i++) {
+        if(!my_ob.count(i)) out(SID, string("  ")+ to_string(i)+ ". " + object::typetoname(i) + " x" + to_string(0) + "\n");
+        else out(SID, string("  ")+ to_string(i)  + ". " + object::typetoname(i) + " x" + to_string(my_ob[i]) + "\n");
     }
-    map<string, int>::iterator i;
-    for (i = cnter.begin(); i != cnter.end(); i++)
-    {
-        cnt++;
-        out(SID, string("  ") + to_string(cnt) + ". " + i->first + " x" + to_string(i->second) + "\n");
-    }
-
     return;
 }
 
 void user::check_package(int id, SOCKET SID)
 {
-    int cnt = 0;
-    map<string, int>cnter;
-    cnter.clear();
-    set<int>& t = this->my_ob;
-    set<int>::iterator it;
-    for (it = t.begin(); it != t.end(); it++) {
-        int tmp = *it;
-        object* a = object::OB[tmp];
-        cnter[a->get_name()]++;
-    }
-    string name_c;
-    map<string, int>::iterator i;
-    for (i = cnter.begin(); i != cnter.end(); i++)
+    string name = object::typetoname(id);
+    if (!this->my_ob.count(id))
     {
-        cnt++;
-        if (cnt == id) {
-            name_c = i->first;
-            break;
-        }
+        out(SID,string("\n你还未拥有"+name+",去探索更远的大陆吧..\n"));
+        return;
     }
-    for (it = t.begin(); it != t.end(); it++) {
-        int temp = *it;
-        object* a = object::OB[id];
-        if (a->get_name() == name_c) {
-            a->show(SID);
-            break;
-        }
+    if (id == 1) {
+        bean *a=new bean(0);
+        a->show(SID);
+        delete a;
+    }
+    else {
+        key* a = new key();
+        a->show(SID);
+        delete a;
     }
     return;
 }
