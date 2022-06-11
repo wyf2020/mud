@@ -27,11 +27,12 @@ void initial_poke_1(int pos, int uid);
 
 void initial_poke();
 
-void Initial_key();
-void Initial_box();
-
-void Initial_bean();
-void Initial_npc();
+int Initial_key(int pos);
+int Initial_box(int id,int pos);
+void Initialmaps();
+void Initialobject();
+int Initial_bean(int pos);
+int Initial_npc(int id,int pos);
 
 void Initial();
 

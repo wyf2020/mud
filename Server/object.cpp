@@ -89,6 +89,11 @@ box::box(int in, string n, string di ):inside(in),object(di,n) {
 box::~box() {
 }
 
+void box::insert(int id)
+{
+    inside = id;
+}
+
 void box::act(user* u, SOCKET SID) {
     if (acted == true) {
         out(SID,  string("\n...你回过神来，发现它早已被搜刮一空，你使劲拍了拍额头让自己清醒...\n"));
