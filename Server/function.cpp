@@ -224,11 +224,11 @@ void fight_pvp(int u1, int u2, SOCKET SID1, SOCKET SID2) {
         out(SID1, string("-------------------第") + to_string(round) + "回合---------------------\n");
         out(SID2, string("-------------------第") + to_string(round) + "回合---------------------\n");
         p1->show_status(SID1);
-        p1->show_status(SID2);
+        p2->show_status(SID2);
         out(SID1, string("      VS      "));
         out(SID2, string("      VS      "));
         p2->show_status(SID1);
-        p2->show_status(SID2);
+        p1->show_status(SID2);
         out(SID1, string("\n"));
         out(SID2, string("\n"));
 
@@ -252,7 +252,7 @@ void fight_pvp(int u1, int u2, SOCKET SID1, SOCKET SID2) {
         string num1 = Skill::SK[sk_id1]->use_skill(pid1, pid2);
 
         out(SID1, string("你对") + p2->get_name() + num1 + "\n");
-        out(SID2, string("对方对你") + num1 + "\n");
+        out(SID2, string("对方") + num1 + "\n");
         if (p2->HP == 0) {
             out(SID1, string("你成功击败了") + up2->get_name());
             p1->exp_up((int)ceil(exp_needed[p2->level - 1] * 0.5), SID1);
@@ -278,7 +278,7 @@ void fight_pvp(int u1, int u2, SOCKET SID1, SOCKET SID2) {
             }
             string num2 = Skill::SK[sk_id2]->use_skill(pid2, pid1);
             out(SID2, string("你对") + p1->get_name() + num2);
-            out(SID1, string("对方对你") + num2);
+            out(SID1, string("对方") + num2);
             if (p1->HP == 0) {
                 out(SID2, string("你成功击败了") + up1->get_name());
                 p2->exp_up((int)ceil(exp_needed[p1->level - 1] * 0.5), SID2);
